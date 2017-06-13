@@ -1,0 +1,135 @@
+<HTML>
+<HEAD>
+<TITLE>C++ EXERCISES 4</TITLE>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link REL="stylesheet" TYPE="text/css" href="basic.css">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+
+<P><HR></P>
+<KBD><P>This document is part of the HTML publication "<A HREF="CourseStructure.html"><B>An Introduction to the Imperative Part of C++</B></A>"<BR>
+<BR>
+The original version was produced by <A HREF="http://www.ucl.ac.uk/dis/people/robmiller"><B>Rob Miller</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1996.<BR>
+<BR>
+Version 1.1 (modified by <A HREF="http://www.cs.ucl.ac.uk/people/D.Clark.html"><B>David Clark</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1997)</P>
+<P>Version 1.2 (modified by <B>Bob White</B> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1998)</P>
+<P>Version 1.3, 1.4, 2.0, ..., 2.15 (modified by <A HREF="http://www.doc.ic.ac.uk/~wjk"><B>William Knottenbelt</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1999-September 2016)</KBD></P> 
+ <P><HR></P>
+
+<CENTER>
+<H1>Introduction to C++ Programming: Exercise Sheet 4</H1>
+</CENTER>
+
+<A NAME="Q1"><H2>Question 1</H2></A>
+
+<P>Write a program which outputs its own C++ source file to the screen.</P>
+
+<P>
+(<A HREF="RobMillerEA4-1.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S4">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<A NAME="Q2"><H2>Question 2</H2></A>
+
+<P>Write a program that (i) starts with the output test statement:</P>
+
+<PRE WIDTH=100>
+<TT>	cout &lt;&lt; "Testing: " &lt;&lt; 16/2 &lt;&lt; " = " &lt;&lt; 4*2 &lt;&lt; ".\n\n"; 
+</TT></PRE>
+
+<P>and then (ii) outputs its own C++ source file to a 
+file called "WithoutComments.cpp" and to the screen, but 
+omitting any of the comments enclosed in "<TT>/* ... */</TT>" 
+markers (and omitting the markers themselves). 
+The new program in the file "WithoutComments.cpp" should 
+compile and run in exactly the same way as the 
+program from which it was generated.</P>
+
+<P><I><B>Hints:</B><BR>(i) you 
+might find the "putback()" function useful,<BR>(ii) you 
+might want to use the idea of a "flag" to keep track 
+of whether you're inside a comment or not.</I></P>
+
+<P>
+(<A HREF="RobMillerEA4-2.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S4">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<A NAME="Q3"><H2>Question 3</H2></A>
+
+<P>Write a program which counts and displays the number 
+of characters (including blanks) in its own 
+source code file.</P>
+
+<P>
+(<A HREF="RobMillerEA4-3.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S4">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<A NAME="Q4"><H2>Question 4</H2></A>
+
+<P>Without using an array (we will learn about arrays 
+in <A HREF="RobMillerL6.html">Lecture 6</A>), 
+write a program that prints itself out 
+backwards on the screen.</P> 
+
+<P><I><B>Hints:</B><BR>(i) the answer to question 3 might help at the 
+start of your program,<BR>(ii) be 
+careful not to re-use an input stream once an 
+operation has failed on it - use a new stream instead.<BR></I>
+
+<P><B>Remark:</B> 
+don't worry if your program takes a while before 
+it prints to the screen - opening and closing files takes 
+time.</I></P>
+
+<P>
+(<A HREF="RobMillerEA4-4.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S4">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+
+<A NAME="Q5"><H2>Question 5</H2></A>
+
+<P>What screen output does the 
+<A HREF="RobMillerEx4-5.cpp">following program</A> produce, and why?</P> 
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+
+	using namespace std;
+
+	int main()
+	{
+		char character;
+		int integer;
+		ofstream out_stream;
+		ifstream in_stream;
+	
+		/* Create a file containing two integers */
+		out_stream.open("Integers");
+		out_stream &lt;&lt; 123 &lt;&lt; ' ' &lt;&lt; 456;
+		out_stream.close();
+	
+		/* Attempt to read a character, then an integer,
+		   then a character again, then an integer again,
+		   from the file "Integers" just created.         */
+		in_stream.open("Integers");
+		in_stream &gt;&gt; character &gt;&gt; integer;
+		cout &lt;&lt; "character: '" &lt;&lt; character &lt;&lt; "'\n";
+		cout &lt;&lt; "integer: " &lt;&lt; integer &lt;&lt; "\n";
+		in_stream &gt;&gt; character &gt;&gt; integer;
+		cout &lt;&lt; "character: '" &lt;&lt; character &lt;&lt; "'\n";
+		cout &lt;&lt; "integer: " &lt;&lt; integer &lt;&lt; "\n";
+		in_stream.close();
+	
+		return 0;
+	}
+</TT></PRE>
+
+<P>
+(<A HREF="RobMillerEA4-5.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S4">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,682 @@
+<HTML>
+<HEAD>
+<TITLE>FILES AND STREAMS</TITLE>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link REL="stylesheet" TYPE="text/css" href="basic.css">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><HR></P>
+<KBD><P>This document is part of the HTML publication "<A HREF="CourseStructure.html"><B>An Introduction to the Imperative Part of C++</B></A>"<BR>
+<BR>
+The original version was produced by <A HREF="http://www.ucl.ac.uk/dis/people/robmiller"><B>Rob Miller</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1996.<BR>
+<BR>
+Version 1.1 (modified by <A HREF="http://www.cs.ucl.ac.uk/people/D.Clark.html"><B>David Clark</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1997)</P>
+<P>Version 1.2 (modified by <B>Bob White</B> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1998)</P>
+<P>Version 1.3, 1.4, 2.0, ..., 2.15 (modified by <A HREF="http://www.doc.ic.ac.uk/~wjk"><B>William Knottenbelt</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1999-September 2016)</KBD></P>  
+<P><HR></P>
+
+<CENTER>
+<H1>4. Files and Streams</H1>
+</CENTER>
+
+<A NAME="S4-1"><H2>4.1. Why Use Files?</H2></A>
+
+<P>All the programs we have looked at so far use input 
+only from the keyboard, and output only to the screen. 
+If we were restricted to use only the keyboard 
+and screen as input and output devices, it would be difficult 
+to handle large amounts of input data, and output 
+data would always be lost as soon as we turned the 
+computer off. To avoid these problems, we can store 
+data in some secondary storage device, usually 
+magnetic tapes or discs. Data can be created by one 
+program, stored on these devices, and then accessed or 
+modified by other programs when necessary. To achieve 
+this, the data is packaged up on the storage 
+devices as data structures called <I>files</I>.</P>
+
+<P>The easiest way to think about a file is as a 
+linear sequence of characters. In a simplifed picture (which 
+ignores special characters for text formatting) 
+these lecture notes might be stored in a file called "Lecture_4" 
+as:</P>
+
+<A NAME="F4-1-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-1-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.1.1</B></P>
+</CENTER>
+
+<P>
+<A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S4-2"><H2>4.2 Streams</H2></A>
+
+<P>Before we can work with files in C++, we need to 
+become acquainted with the notion of a <I>stream</I>. We can 
+think of a stream as a channel or conduit on 
+which data is passed from senders to receivers. As far as the  
+programs we will use are concerned, streams allow 
+travel in only one direction. Data can be sent out from 
+the program on an <I>output stream</I>, or received into 
+the program on an <I>input stream</I>. For example, at the start 
+of a program, the standard input stream "<TT>cin</TT>" is 
+connected to the keyboard and the standard output stream 
+"<TT>cout</TT>" is connected to the screen.</P>
+
+<P>In fact, input and output streams such as "<TT>cin</TT>" 
+and "<TT>cout</TT>" are examples of (stream) <I>objects</I>. So learning 
+about streams is a good way to introduce some of 
+the syntax and ideas behind the object-oriented part of 
+C++. The header file which lists the operations on 
+streams both to and from files is called "fstream". We 
+will therefore assume that the program fragments 
+discussed below are embedded in programs containing the  
+"include" statement</P>
+
+<CENTER>
+<P>
+<TT>#include&lt;fstream&gt;</TT>
+</P>
+</CENTER>
+
+<P>As we shall see, the essential characteristic of 
+stream processing is that data elements must be sent to or 
+received from a stream one at a time, i.e. in <I>serial</I> fashion.</P>
+
+<A NAME="S4-2-1"><H3>Creating Streams</H3></A>
+
+<P>Before we can use an input or output stream in a 
+program, we must "create" it. Statements to create streams 
+look like variable declarations, and are usually 
+placed at the top of programs or function implementations 
+along with the variable declarations. So for example the statements</P>
+
+<PRE WIDTH=100>
+<TT>	ifstream in_stream; 
+	ofstream out_stream;</TT>
+</PRE>
+
+<P>respectively create a stream called "<TT>in_stream</TT>" 
+belonging to the <I>class</I> (like type) "<TT>ifstream</TT>" (input-file-stream), 
+and a stream called "<TT>out_stream</TT>" 
+belonging to the class "<TT>ofstream</TT>" (output-file-stream). 
+However, the analogy between streams and ordinary variables 
+(of type "<TT>int</TT>", "<TT>char</TT>", etc.) can't be taken 
+too far. We cannot, for example, use simple 
+assignment statements with streams (e.g. we can't just write 
+"<TT>in_stream1 = in_stream2</TT>").</P>
+
+<A NAME="S4-2-2"><H3>Connecting and Disconnecting Streams to Files</H3></A>
+
+<P>Having created a stream, we can connect it to a 
+file using the <I>member function</I> "<TT>open(...)</TT>". (We have 
+already come across some member functions 
+for output streams, such as "<TT>precision(...)</TT>" and 
+"<TT>width(...)</TT>", in 
+<A HREF="RobMillerL2.html#S2-3">Lecture 2</A>.) The function 
+"<TT>open(...)</TT>" 
+has a different effect for ifstreams than for ofstreams 
+(i.e. the function is polymorphic).</P>
+
+<P>To connect the ifstream "<TT>in_stream</TT>" to the file 
+"Lecture_4", we use the following statement:</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.open("Lecture_4");</TT> 
+</PRE>
+
+<P>This connects "<TT>in_stream</TT>" to the beginning of 
+"Lecture_4". Diagramatically, we end up in the following 
+situation:</P>
+
+<A NAME="F4-2-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-2-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.2.1</B></P>
+</CENTER>
+
+<P>To connect the ofstream "<TT>out_stream</TT>" to the file 
+"Lecture_4", we use an analogous statement:</P>
+
+<PRE WIDTH=100>
+<TT>	out_stream.open("Lecture_4");</TT> 
+</PRE>
+
+<P>Although this connects "<TT>out_stream</TT>" to "Lecture_4", 
+it also deletes the previous contents of the file, 
+ready for new input. Diagramatically, we end up as follows:</P>
+
+<A NAME="F4-2-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-2-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.2.2</B></P>
+</CENTER>
+
+<P>To disconnect connect the ifstream "<TT>in_stream</TT>" 
+to whatever file it is connected to, we write:</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.close();</TT> 
+</PRE>
+
+<P>Diagramatically, the situation changes from that of Figure 4.2.1 to:</P>
+
+<A NAME="F4-2-3"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-2-3.GIF" ALIGN="MIDDLE" ISMAP></BR></BR>
+<P><B>Figure 4.2.3</B></P>
+</CENTER>
+
+
+<P>The statement:</P>
+
+<PRE WIDTH=100>
+<TT>	out_stream.close();</TT> 
+</PRE>
+
+<P>has a similar effect, but in addition the system 
+will "clean up" by adding an "end-of-file" marker at the end 
+of the file. Thus, if no data has been output to 
+"Lecture_4" since "<TT>out_stream</TT>" was connected to it, we 
+change from the situation in Figure 4.2.2 to:</P>
+
+<A NAME="F4-2-4"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-2-4.GIF" ALIGN="MIDDLE" ISMAP></BR></BR>
+<P><B>Figure 4.2.4</B></P>
+</CENTER>
+
+<P>In this case, the file "Lecture_4" still exists, but is <I>empty</I>.</P>
+
+<P><A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S4-3"><H2>4.3 Checking for Failure with File Commands</H2></A>
+
+<P>File operations, such as opening and closing files, 
+are a notorious source of errors. Robust commercial 
+programs should always include some check to make 
+sure that file operations have completed successfully, 
+and error handling routines in case they haven't. 
+A simple checking mechanism is provided by the member 
+function "<TT>fail()</TT>". The function call</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.fail();</TT>
+</PRE>
+
+<P>returns True if the previous stream operation on 
+"<TT>in_stream</TT>" was not successful (perhaps we tried to 
+open a file which didn't exist). If a failure has 
+occurred, "<TT>in_stream</TT>" may be in a corrupted state, and it 
+is best not to attempt any more operations with it. 
+The following example program fragment plays very safe 
+by quitting the program entirely, using the "<TT>exit(1)</TT>" 
+command from the library "cstdlib":</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+	#include &lt;cstdlib&gt;
+
+	using namespace std;
+	
+	int main()
+	{
+		ifstream in_stream;
+	
+		in_stream.open("Lecture_4");
+		if (in_stream.fail())
+		{
+			cout &lt;&lt; "Sorry, the file couldn't be opened!\n";
+			exit(1);
+		}
+		...</TT>
+</PRE>
+
+<P><A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S4-4"><H2>4.4 Character Input and Output</H2></A>
+
+<A NAME="S4-4-1"><H3>Input using "<TT>get(...)</TT>"</H3></A>
+
+<P>Having opened an input file, we can extract or read 
+single characters from it using the member function 
+"<TT>get(...)</TT>". This function takes a single argument of 
+type "<TT>char</TT>". If the program is in the state represented 
+in <A HREF="#F4-2-1">Figure 4.2.1</A>, the statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.get(ch);</TT>
+</PRE>
+
+<P>has two effects: (i) the variable "<TT>ch</TT>" is assigned the 
+value "<TT>'4'</TT>", and (ii) the ifstream "<TT>in_stream</TT>" is re-
+positioned so as to be ready to input the next 
+character in the file. Diagramatically, the new situation is:</P>
+
+<A NAME="F4-4-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-4-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.4.1</B></P>
+</CENTER>
+
+<A NAME="S4-4-2"><H3>Output using "<TT>put(...)</TT>"</H3></A>
+
+<P>We can input or <I>write</I> single characters to a file 
+opened via an ofstream using the member function 
+"<TT>put(...)</TT>". Again, this function takes a single 
+argument of type "<TT>char</TT>". If the program is in the state 
+represented in <A HREF="#F4-2-2">Figure 4.2.2</A>, the statement</P>
+
+<PRE WIDTH=100>
+<TT>	out_stream.put('4');</TT> 
+</PRE>
+
+<P>changes the state to:</P>
+
+<A NAME="F4-4-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-4-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.4.2</B></P>
+</CENTER>
+
+<A NAME="S4-4-3"><H3>The "<TT>putback(...)</TT>" Function</H3></A>
+
+<P>C++ also includes a "<TT>putback(...)</TT>" function for ifstreams. 
+This doesn't really "put the character back" (it 
+doesn't alter the actual input file), but behaves as 
+if it had. Diagramatically, if we started from the state in 
+<A HREF="#F4-4-1">Figure 4.4.1</A>, and executed the statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.putback(ch);</TT> 
+</PRE>
+
+<P>we would end up in the state:</P>
+
+<A NAME="F4-4-3"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-4-3.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.4.3</B></P>
+</CENTER>
+
+<P>Indeed, we can "putback" any character we want to. 
+The alternative statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.putback('7');</TT> 
+</PRE>
+
+<P>would result in:</P>
+
+<A NAME="F4-4-4"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-4-4.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.4.4</B></P>
+</CENTER>
+
+<P><A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S4-5"><H2>4.5 Checking for the End of an Input File</H2></A>
+
+<A NAME="S4-5-1"><H3>4.5.1 End-of-file Checking For Systems 
+Which Implement "<TT>eof()</TT>"</H3></A>
+
+<P>Special care has to be taken with input when the 
+end of a file is reached. Most versions of C++ (including GNU g++ and Microsoft Visual C++) incorporate an end-of-file 
+(EOF) <I>flag</I>, and a member function called 
+"<TT>eof()</TT>" for ifstreams to test if this flag is set to 
+True or False. It's worth discussing such systems 
+briefly, since many text books (including 
+<A HREF="CourseStructure.html#Books">Savitch</A>) 
+assume this useful facility.</P>
+
+<P>In such systems, when an ifstream is initially 
+connected to a file, the EOF flag is set to False (even if the 
+file is empty). However, if the ifstream "<TT>in_stream</TT>" 
+is positioned at the end of a file, and the EOF flag is 
+False, the statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.get(ch);</TT> 
+</PRE>
+
+<P>will leave the variable "<TT>ch</TT>" in an unpredictable state, 
+and set the EOF flag to True. Once the EOF flag is 
+set to True, no attempt should be made to read from 
+the file, since the results will be unpredictable. To 
+illustrate with a diagramatic example, if we start from</P>
+
+<A NAME="F4-5-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-5-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.5.1</B></P>
+</CENTER>
+
+<P>and then execute the statement</P>
+
+
+<PRE WIDTH=100>
+<TT>	in_stream.get(ch);</TT>
+</PRE>
+
+<P>this results in the state</P>
+
+<A NAME="F4-5-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-5-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.5.2</B></P>
+</CENTER>
+
+<P>If we again execute the statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.get(ch);</TT> 
+</PRE>
+
+<P>this now results in the state</P>
+
+<A NAME="F4-5-3"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-5-3.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.5.3</B></P>
+</CENTER>
+
+<P>The boolean expression</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream.eof()</TT> 
+</PRE>
+
+<P>will now evaluate to True.</P>
+
+<A NAME="WhileLoop"></A>
+<P>Below is a simple program which uses these techniques 
+to copy the file "Lecture_4" simultaneously to the 
+screen and to the file "Copy_of_4". Note the use of 
+a <I>while loop</I> in this program. "While" loops are 
+simplified versions of "for" loops, without the 
+initialisation and update statements in the "<TT>()</TT>" parentheses 
+(we will look at such statements again in the 
+<A HREF="RobMillerL5.html#S5-2">next lecture</A>).</P>
+
+<A NAME="P4-5-1"></A>
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+
+	using namespace std;
+	
+	int main()
+	{
+		char character;
+		ifstream in_stream;
+		ofstream out_stream;
+	
+		in_stream.open("Lecture_4");
+		out_stream.open("Copy_of_4");
+	
+		in_stream.get(character);
+		while (!in_stream.eof())
+		{
+			cout &lt;&lt; character;
+			out_stream.put(character);
+			in_stream.get(character);
+		}
+
+		out_stream.close();
+		in_stream.close();
+	
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P>
+<B><A HREF="RobMiller4-5-1.cpp">
+Program 4.5.1</A></B></P>
+</CENTER>
+
+<P><A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+
+<A NAME="S4-6"><H2>4.6 Streams as Arguments in Functions</H2></A>
+
+<P>Streams can be arguments to functions, but must be 
+reference parameters (not value parameters). Below is 
+another version of <A HREF="#P4-5-1">Program 4.5.1</A> which uses the 
+function "<TT>copy_to(...)</TT>".</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+	
+	using namespace std;
+
+	void copy_to(ifstream&amp; in, ofstream&amp; out);
+	
+	/* MAIN PROGRAM: */
+	int main()
+	{
+		ifstream in_stream;
+		ofstream out_stream;
+	
+		in_stream.open("Lecture_4");
+		out_stream.open("Copy_of_4");
+		copy_to(in_stream, out_stream);
+		out_stream.close();
+		in_stream.close();
+	
+		return 0;
+	}
+	/* END OF MAIN PROGRAM */
+	
+	/* FUNCTION TO COPY A FILE TO ANOTHER FILE AND TO THE SCREEN: */
+	void copy_to(ifstream&amp; in, ofstream&amp; out)
+	{
+		char character;
+	
+		in.get(character);
+		while (!in.eof())
+		{
+			cout &lt;&lt; character;
+			out.put(character);
+			in.get(character);
+		}
+	}
+	/* END OF FUNCTION */</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller4-6-1.cpp">
+Program 4.6.1</A></B></P>
+</CENTER>
+
+<P>
+<A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S4-7"><H2>4.7 Input and Output Using 
+"<TT>&gt;&gt;</TT>" and "<TT>&lt;&lt;</TT>"</H2></A>
+
+<P>So far we have only talked about writing and 
+reading individual characters to and from files. At the lowest 
+level, ofstreams and ifstreams only deal 
+with files which are sequences of characters. 
+So data of other types 
+("<TT>int</TT>", "<TT>double</TT>", etc.) has to be converted into 
+character sequences before it can be written to a file, and 
+these character sequences have to be converted 
+back again when they are input.</P>
+
+<P>However, the operators "<TT>&gt;&gt;</TT>" and "<TT>&lt;&lt;</TT>", 
+which we have already met in the context of keyboard input and 
+screen output, do some of this conversion automatically. 
+For example, from the state</P>
+
+<A NAME="F4-7-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-7-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.7.1</B></P>
+</CENTER>
+
+<P>execution of the statement</P>
+
+<PRE WIDTH=100>
+<TT>	out_stream &lt;&lt; 437 &lt;&lt; ' ';</TT>
+</PRE>
+
+<P>will result in the new state</P>
+
+<A NAME="F4-7-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-7-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.7.2</B></P>
+</CENTER>
+
+<P>When using these higher level facilities, it is 
+important to include at least one <TT>' '</TT> (blank) character (or a 
+new-line character) after each item of data written. 
+This ensures that the data items are correctly separated in 
+the file, ready for input using "<TT>&gt;&gt;</TT>". For 
+example, from the state</P>
+
+<A NAME="F4-7-3"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-7-3.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.7.3</B></P>
+</CENTER>
+
+<P>where "<TT>n</TT>" has been declared as of data type "<TT>int</TT>", 
+execution of the statement</P>
+
+<PRE WIDTH=100>
+<TT>	in_stream &gt;&gt; n;</TT>
+</PRE>
+
+<P>will result in the new state</P>
+                           
+<A NAME="F4-7-4"></A>
+<CENTER>
+<IMG SRC="RobMillerF4-7-4.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 4.7.4</B></P>
+</CENTER>
+
+<P>Notice that the operation "<TT>&gt;&gt;</TT>" has skipped over 
+the blank space "<TT>' '</TT>" before the number 437. It always 
+does this, no matter what data type it has been 
+reading or expects to read (even characters).</P>
+
+<P>The following program, which first creates a file 
+called "Integers" containing the integers 51, 52, 53, 54 
+and 55, further illustrates these techniques.</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+	
+	using namespace std;
+
+	int main()
+	{
+		char character;
+		int number = 51;
+		int count = 0;
+		ofstream out_stream;
+		ifstream in_stream1;   /* Stream for counting integers. */
+		ifstream in_stream2;   /* Stream for counting characters. */
+	
+		/* Create the file */
+		out_stream.open("Integers");
+		for (count = 1 ; count &lt;= 5 ; count++)
+			out_stream &lt;&lt; number++ &lt;&lt; ' ';
+		out_stream.close();
+	
+		/* Count the integers in the file */
+		in_stream1.open("Integers");
+		count = 0;
+		in_stream1 &gt;&gt; number;
+		while (!in_stream1.eof())
+		{
+			count++;
+			in_stream1 &gt;&gt; number;
+		}
+		in_stream1.close();
+		cout &lt;&lt; "There are " &lt;&lt; count &lt;&lt; " integers in the file,\n";
+	
+		/* Count the non-blank characters */
+		in_stream2.open("Integers");
+		count = 0;
+		in_stream2 &gt;&gt; character;
+		while (!in_stream2.eof())
+		{
+			count++;
+			in_stream2 &gt;&gt; character;
+		}
+		in_stream2.close();
+		cout &lt;&lt; "represented using " &lt;&lt; count &lt;&lt; " characters.\n";
+	
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller4-7-1.cpp">
+Program 4.7.1</A></B></P>
+</CENTER>
+
+<P>This program produces the following output:</P>
+
+<PRE WIDTH=100>
+<TT>	There are 5 integers in the file,
+	represented using 10 characters.</TT>
+</PRE>
+
+<P>Once again, notice that, unlike the function "<TT>get(...)</TT>", 
+the operator "<TT>&gt;&gt;</TT>" has jumped over the blank (i.e. 
+space) characters in the file (which separate the five 
+integers) when used in counting characters in the last 
+part of the program.</P>
+
+<P>
+<A 
+HREF="CourseStructure.html#S4">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+
+<A NAME="S4-8"><H2>4.8 Summary</H2></A>
+
+<P>In this lecture we have seen how programs may be connected 
+to external files for input and output using 
+streams. We have seen how "low-level" character input and 
+output can be achieved using the functions 
+"<TT>get(...)</TT>" and "<TT>put(...)</TT>", and how "high-level" 
+input and output 
+of other kinds of data types can be 
+achieved using the stream operators "<TT>&gt;&gt;</TT>" and "<TT>&lt;&lt;</TT>". 
+The material here is also covered in more detail in 
+<A HREF="CourseStructure.html#Books">Savitch</A>, 
+Chapter 6.
+</P>
+
+<H1><A 
+HREF="RobMillerE4.html">
+Exercises</A></H1>
+<BR><HR>
+</BODY>
+</HTML>
+
+

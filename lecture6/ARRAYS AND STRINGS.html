@@ -1,0 +1,808 @@
+<HTML>
+<HEAD>
+<TITLE>ARRAYS AND STRINGS</TITLE>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link REL="stylesheet" TYPE="text/css" href="basic.css">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><HR></P>
+<KBD><P>This document is part of the HTML publication "<A HREF="CourseStructure.html"><B>An Introduction to the Imperative Part of C++</B></A>"<BR>
+<BR>
+The original version was produced by <A HREF="http://www.ucl.ac.uk/dis/people/robmiller"><B>Rob Miller</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1996.<BR>
+<BR>
+Version 1.1 (modified by <A HREF="http://www.cs.ucl.ac.uk/people/D.Clark.html"><B>David Clark</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1997)</P>
+<P>Version 1.2 (modified by <B>Bob White</B> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1998)</P>
+<P>Version 1.3, 1.4, 2.0, ..., 2.15 (modified by <A HREF="http://www.doc.ic.ac.uk/~wjk"><B>William Knottenbelt</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1999-September 2016)</KBD></P>  
+<P><HR></P>
+
+<CENTER>
+<H1>6. Arrays and Strings</H1>
+</CENTER>
+
+
+<A NAME="S6-1"><H2>6.1 The Basic Idea and Notation</H2></A>
+
+<P>Although we have already seen how to store large 
+amounts of data in files, we have as yet no convenient 
+way to manipulate such data from within programs. 
+For example, we might want to write a program that 
+inputs and then ranks or sorts a long list of numbers. 
+C++ provides a <I>structured data type</I> called an <I>array</I> to 
+facilitate this kind of task. The use of arrays permits 
+us to set aside a group of memory locations (i.e. a 
+group of variables) that we can then manipulate as a 
+single entity, but that at the same time gives us direct 
+access to any individual component. Arrays are simple 
+examples of structured data types - they are 
+effectively just lists of variables all of the same 
+data type ("<TT>int</TT>", "<TT>char</TT>" or whatever). Later in the course 
+you will learn how to construct more complicated 
+compound data structures.</P>
+
+<A NAME="S6-1-1"><H3>Declaring an array</H3></A>
+
+<P>The general syntax for an array declaration is:</P>
+
+
+<PRE WIDTH=100>
+<TT>	&lt;component type&gt;  &lt;variable identifier&gt;[&lt;integer value&gt;];</TT>
+</PRE>
+
+<P>For example, suppose we are writing a program to 
+manipulate data concerning the number of hours a group 
+of 6 employees have worked in a particular week. 
+We might start the program with the array declaration:</P>
+
+<PRE WIDTH=100>
+<TT>	int hours[6];</TT>
+</PRE>
+
+<P>or better,</P>
+
+<PRE WIDTH=100>
+<TT>	const int NO_OF_EMPLOYEES = 6;
+	int hours[NO_OF_EMPLOYEES];</TT>
+</PRE>
+
+<P>Indeed, if we are going to use a number of such arrays 
+in our program, we can even use a <I>type definition</I>:</P>
+
+<PRE WIDTH=100>
+<TT>	const int NO_OF_EMPLOYEES = 6;
+	typedef int Hours_array[NO_OF_EMPLOYEES];
+	Hours_array hours;
+	Hours_array hours_week_two;</TT>
+</PRE>
+
+<P>In each case, we end up with 6 variables of type "<TT>int</TT>" with identifiers</P>
+
+<PRE WIDTH=100>
+<TT>	hours[0]   hours[1]   hours[2]   hours[3]   hours[4]   hours[5]</TT>
+</PRE>
+
+<P>Each of these is referred to as an <I>element</I> or <I>component</I> 
+of the array. The numbers <TT>0</TT>, ..., <TT>5</TT> are the <I>indexes</I> 
+or <I>subscripts</I> of the components. An important feature 
+of these 6 variables is that they are allocated 
+consecutive memory locations in the computer. We can picture this as:</P>
+
+<A NAME="F6-1-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-1-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.1.1</B></P>
+</CENTER>
+
+<P>
+<A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-1-2"><H3>Assignment Statements and Expressions with Array Elements</H3></A>
+
+<P>Having declared our array, we can treat the individual 
+elements just like ordinary variables (of type "<TT>int</TT>" 
+in the particular example above). In particular, we can 
+write assignment statements such as</P>
+
+<PRE WIDTH=100>
+<TT>	hours[4] = 34;
+	hours[5] = hours[4]/2;</TT>
+</PRE>
+
+<P>and use them in logical expressions, e.g.</P>
+
+<PRE WIDTH=100>
+<TT>	if (number &lt; 4 &amp;&amp; hours[number] &gt;= 40) { ...</TT>
+</PRE>
+
+<A NAME="Program6-1-1"></A>
+<P>A common way to assign values to an array is using 
+a "for" or "while" loop. The following program 
+prompts the user for the number of hours that 
+each employee has worked. It is more natural to number 
+employees from 1 to 6 than from 0 to 5, but it is 
+important to remember that array indexes always start from 
+0. Hence the program subtracts 1 from each employee 
+number to obtain the corresponding array index.</P>
+
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	const int NO_OF_EMPLOYEES = 6;
+	typedef int Hours_array[NO_OF_EMPLOYEES];
+	
+	int main()
+	{
+		Hours_array hours;
+		int count;
+	
+		for (count = 1 ; count &lt;= NO_OF_EMPLOYEES ; count++)
+		{
+			cout &lt;&lt; "Enter hours for employee number " &lt;&lt; count &lt;&lt; ": ";
+			cin &gt;&gt; hours[count - 1];
+		}
+	
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P>
+<B><A HREF="RobMiller6-1-1.cpp">
+Program 6.1.1</A></B></P>
+</CENTER>
+
+<P>A typical run might produce the following input/output:</P>
+
+<PRE WIDTH=100>
+<TT>	Enter hours for employee number 1: 38
+	Enter hours for employee number 2: 42
+	Enter hours for employee number 3: 29
+	Enter hours for employee number 4: 35
+	Enter hours for employee number 5: 38
+	Enter hours for employee number 6: 37</TT>
+</PRE>
+
+<P>in which case our block of variables would then be in the state:</P>
+
+<A NAME="F6-1-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-1-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.1.2</B></P>
+</CENTER>
+
+<P>It is instructive to consider what would have happened 
+had we forgotten to subtract 1 from the variable 
+"<TT>count</TT>" in the "<TT>cin ...</TT>" statement (within the "for" 
+loop) in <A HREF="#Program6-1-1">Program 6.1.1</A>. Unlike some languages, 
+C++ does not do range bound error checking, so we 
+would have simply ended up in the state:</P>
+
+
+<A NAME="F6-1-3"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-1-3.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.1.3 - A Range Bound Error</B></P>
+</CENTER>
+
+
+<P>In other words, C++ would have simply put the value 
+"37" into the next integer-sized chunk of memory 
+located after the memory block set aside for the 
+array "<TT>hours</TT>". This is a very undesirable situation - the 
+compiler might have already reserved this chunk of 
+memory for another variable (perhaps, for example, for 
+the variable "<TT>count</TT>").</P>
+
+<P>Array elements can be of data types other than "<TT>int</TT>". 
+Here's a program that prints itself out backwards on 
+the screen, using an array of type "<TT>char</TT>".</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;fstream&gt;
+	
+	using namespace std;
+
+	const int MAX = 1000;
+	typedef char File_array[MAX];
+	
+	int main()
+	{
+		char character;
+		File_array file;
+		int count;
+		ifstream in_stream;
+	
+		in_stream.open("6-1-2.cpp");
+		in_stream.get(character);
+		for (count = 0 ; ! in_stream.eof() &amp;&amp; count &lt; MAX ; count++) 
+		{
+			file[count] = character;
+			in_stream.get(character);
+		}
+		in_stream.close();
+	
+		while (count &gt; 0)
+			cout &lt;&lt; file[--count];
+
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller6-1-2.cpp">
+Program 6.1.2</A></B></P>
+</CENTER>
+
+<P>Note the use of the condition "<TT>... &amp;&amp; count &lt; MAX ; ...</TT>" 
+in the head of the "for" loop, to avoid 
+the possibility of a range bound error.</P>
+
+<P><A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-2"><H2>6.2 Arrays as Parameters in Functions</H2></A>
+
+<P>Functions can be used with array parameters to maintain a 
+structured design. Here is a definition of an 
+example function which returns the average hours worked, 
+given an array of type "<TT>Hours_array</TT>" from 
+<A HREF="#Program6-1-1">Program 6.1.1</A></P>
+
+<PRE WIDTH=100>
+<TT>	float average(Hours_array hrs)
+	{
+		float total = 0;
+		int count;
+		for (count = 0 ; count &lt; NO_OF_EMPLOYEES ; count++)
+			total += float(hrs[count]);
+		return (total / NO_OF_EMPLOYEES);
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B>Fragment of <A HREF="RobMiller6-2-1.cpp">Program 6.2.1</A></B></P>
+</CENTER>
+
+<P>We could make this function more general by including 
+a second parameter for the length of the array:</P>
+
+<PRE WIDTH=100>
+<TT>	float average(int list[], int length)
+	{
+		float total = 0;
+		int count;
+		for (count = 0 ; count &lt; length ; count++)
+			total += float(list[count]);
+		return (total / length);
+	}</TT>
+</PRE>
+
+<P>It is quite common to pass the array length to a 
+function along with an array parameter, since the syntax for 
+an array parameter (such as "<TT>int list[]</TT>" above) 
+doesn't include the array's length.</P>
+
+<P>Although array parameters are not declared with an "<TT>&amp;</TT>" 
+character in function declarations and definitions, 
+they are effectively reference parameters (rather than 
+value parameters). In other words, when they execute, 
+functions do not make private copies of the arrays they 
+are passed (this would potentially be very expensive 
+in terms of memory). Hence, like the 
+<A 
+HREF="RobMillerL3.html#S3-3-2">reference parameters we have seen in Lecture 
+3</A>,
+arrays can be 
+permanently changed when passed as arguments to functions. 
+For example, after a call to the following 
+function, each element in the third array argument is equal 
+to the sum of the corresponding two elements in 
+the first and second arguments:</P>
+
+<PRE WIDTH=100>
+<TT>	void add_lists(int first[], int second[], int total[], int length)
+	{
+		int count;
+		for (count = 0 ; count &lt; length ; count++)
+			total[count] = first[count] + second[count];
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B>Fragment of <A HREF="RobMiller6-2-2.cpp">Program 6.2.2</A></B></P>
+</CENTER>
+
+<P>As a safety measure, we can add the modifier 
+"<TT>const</TT>" in the function head:</P>
+
+<PRE WIDTH=100>
+<TT>	void add_lists(const int fst[], const int snd[], int tot[], int len)
+	{
+		int count;
+		for (count = 0 ; count &lt; len; count++)
+			tot[count] = fst[count] + snd[count];
+	}</TT>
+</PRE>
+
+<P>The compiler will then not accept any statements within the 
+function's definition which potentially modify 
+the elements of the arrays "<TT>fst</TT>" or "<TT>snd</TT>". Indeed, 
+the restriction imposed by the "<TT>const</TT>" modifier when 
+used in this context is stronger than really needed 
+in some situations. For example, the following two 
+function definitions will not be accepted by the compiler:</P>
+
+<PRE WIDTH=100>
+<TT>	void no_effect(const int list[])
+	{
+		do_nothing(list);
+	}
+	
+	void do_nothing(int list[])
+	{
+		;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B>Fragment of <A HREF="RobMiller6-2-3.cpp">Program 6.2.3</A></B></P>
+</CENTER>
+
+<P>This is because, although we can see that "<TT>do_nothing(...)</TT>" 
+does nothing, its head doesn't include the 
+modifier "<TT>const</TT>", and the compiler only looks at the head 
+of "<TT>do_nothing(...)</TT>" when checking to see if 
+the call to this function from within "<TT>no_effect(...)</TT>" is legal.</P>
+
+<P><A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+
+<A NAME="S6-3"><H2>6.3 Sorting Arrays</H2></A>
+
+<P>Arrays often need to be sorted in either ascending or descending
+order. There are many well known methods for doing this; the <I>quick
+sort</I> algorithm is among the most efficient. This section briefly
+describes one of the easiest sorting methods called the <I>selection
+sort</I>.</P>
+
+<P>The basic idea of selection sort is:</P>
+
+<P>For each index position I in turn:</P>
+
+<OL>
+<LI>
+Find the smallest data value in the array from positions I to 
+(Length - 1), where 
+"Length" is the number of data values stored.
+</LI>
+<LI>
+Exchange the smallest value with the value at position I.
+</LI>
+</OL>
+
+<P>To see how selection works, consider an array of 
+five integer values, declared as</P>
+
+<PRE WIDTH=100>
+<TT>	int a[5];</TT>
+</PRE>
+
+<P>and initially in the state:</P>
+
+<A NAME="F6-3-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-3-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.3.1</B></P>
+</CENTER>
+
+<P>Selection sort takes the array through the following sequence of states:</P>
+
+<A NAME="F6-3-2"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-3-2.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.3.2</B></P>
+</CENTER>
+       
+<P>Each state is generated from the previous one by swapping the 
+two elements of the array marked with a "bullet".</P>
+
+<P>We can code this procedure in C++ with three functions. 
+The top level function "<TT>selection_sort(...)</TT>" 
+(which takes and array and an integer argument) sorts its 
+first (array) argument by first calling the function 
+"<TT>minimum_from(array,position,length)</TT>", which returns the 
+index of the smallest element in 
+"<TT>array</TT>" which is positioned at or after the index "<TT>position</TT>". 
+It then swaps values according to the 
+specification above, using the "<TT>swap(...)</TT>" function:</P>
+
+<PRE WIDTH=100>
+<TT>	void selection_sort(int a[], int length)
+	{
+		for (int count = 0 ; count &lt; length - 1 ; count++)
+			swap(a[count],a[minimum_from(a,count,length)]);
+	}
+	
+	int minimum_from(int a[], int position, int length)
+	{
+		int min_index = position;
+	
+		for (int count = position + 1 ; count &lt; length ; count ++)
+			if (a[count] &lt; a[min_index])
+				min_index = count;
+	
+		return min_index;
+	}
+	
+	void swap(int&amp; first, int&amp; second)
+	{
+		int temp = first;
+		first = second;
+		second = temp;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B>Fragment of <A HREF="RobMiller6-3-1.cpp">Program 6.3.1</A></B></P>
+</CENTER>
+
+<P>
+<A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-4"><H2>6.4 Two-dimensional Arrays</H2></A>
+
+<P>Arrays can have more than one dimension. In this section we briefly 
+examine the use of two-dimensional 
+arrays to represent two-dimensional structures such as screen 
+bitmaps or nxm matrices of integers.</P>
+
+<P>A bitmap consists of a grid of Boolean values 
+representing the state of the dots or pixels on a screen. "True" 
+means "on" or that the pixel is white; "False" 
+means "off" or the pixel is black. Let's suppose the screen is 
+639 pixels wide and 449 pixels high. We can 
+declare the corresponding array as follows:</P>
+
+<PRE WIDTH=100>
+<TT>	enum Logical {False, True};
+	const int SCREEN_HEIGHT = 449;
+	const int SCREEN_WIDTH = 639;
+	Logical screen[SCREEN_HEIGHT][SCREEN_WIDTH];</TT>
+</PRE>
+
+<P>References to individual data elements within the array 
+"<TT>screen</TT>" simply use two index values. For 
+example, the following statement assigns the value 
+"<TT>True</TT>" to the cell (pixel) in row 4, column 2 of the 
+array.</P>
+
+<PRE WIDTH=100>
+<TT>	screen[3][1] = True;</TT>
+</PRE>
+
+<P>All of the discussion in <A HREF="#S6-2">Section 6.2</A> about one-dimensional 
+arrays as parameters in functions also applies to 
+two-dimensional arrays, but with one additional peculiarity. 
+In function declarations and in the heads of 
+function definitions, the size of the first dimension of a 
+multidimensional array parameter is not given 
+(inside the "<TT>[]</TT>" brackets), but the sizes of all the other 
+dimensions are given. Hence, for example, the 
+following is a correct form for a function which sets all 
+the screen pixels to black:</P>
+
+
+<PRE WIDTH=100>
+<TT>	void clear_bitmap(Logical bitmap[][SCREEN_WIDTH], int screen_height)
+	{
+		for (int row = 0 ; row &lt; screen_height ; row++)
+			for (int column = 0 ; column &lt; SCREEN_WIDTH; column++)
+				bitmap[row][column] = False;
+	}</TT>
+</PRE>
+
+<P>
+<A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-5"><H2>6.5 Strings</H2></A>
+
+<P>We have already been using string values, such as 
+"<TT>"Enter age: "</TT>", in programs involving output to 
+the screen. In C++ you can store and manipulate such 
+values in <I>string variables</I>, which are really just arrays 
+of characters, but used in a particular way.</P>
+
+<A NAME="S6-5-1"><H3>The Sentinel String Character '\0'</H3></A>
+
+<P>The key point is that, to use the special functions associated 
+with strings, string values can only be stored in 
+string variables whose length is <I>at least 1 greater than</I> 
+the length (in characters) of the value. This is because 
+extra space must be left at the end to store the <I>sentinel 
+string character</I> "<TT>'\0'</TT>" which marks the end of the 
+string value. For example, the following two arrays both 
+contain all the characters in the string value 
+"<TT>"Enter age: "</TT>", but only the array on the left contains 
+a proper string representation.</P>
+
+<A NAME="F6-5-1"></A>
+<CENTER>
+<IMG SRC="RobMillerF6-5-1.GIF" ALIGN="MIDDLE" ISMAP></BR>
+<P><B>Figure 6.5.1</B></P>
+</CENTER>
+
+
+<P>In other words, although both "<TT>phrase</TT>" and "<TT>list</TT>" are 
+arrays of characters, only "<TT>phrase</TT>" is big 
+enough to contain the string value "<TT>"Enter age: "</TT>".
+ We don't care what characters are stored in the 
+variables "<TT>phrase[12]</TT>" and "<TT>phrase[13]</TT>", because all 
+the string functions introduced below ignore 
+characters after the "<TT>'\0'</TT>".</P>
+
+
+<P><A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+
+<A NAME="S6-5-2"><H3>String Variable Declarations and Assignments</H3></A>
+
+
+
+<P>String variables can be declared just like other arrays:</P>
+
+
+<PRE WIDTH=100>
+<TT>	char phrase[14];</TT>
+</PRE>
+
+<P>String arrays can be initialised or partially 
+initialised at the same time as being declared, using a list of 
+values enclosed in "{}" braces (the same is true 
+of arrays of other data types). For example, the statement</P>
+
+
+<PRE WIDTH=100>
+<TT>	char phrase[14] = {'E','n','t','e','r',' ','a','g','e',':',' ','\0'};</TT>
+</PRE>
+
+<P>both declares the array "phrase" and initialises 
+it to the state in Figure 6.5.1. The statement</P>
+
+
+<PRE WIDTH=100>
+<TT>	char phrase[14] = "Enter age: ";</TT>
+</PRE>
+
+<P>is equivalent. If the "14" is omitted, an array 
+will be created just large enough to contain both the value 
+""Enter age: "" and the sentinel character "'\0'", 
+so that the two statements</P>
+
+
+<PRE WIDTH=100>
+<TT>	char phrase[] = {'E','n','t','e','r',' ','a','g','e',':',' ','\0'};
+char phrase[] = "Enter age: ";</TT>
+</PRE>
+
+<P>are equivalent both to each other and to the statement</P>
+
+<PRE WIDTH=100>
+<TT>	char phrase[12] = "Enter age: ";</TT>
+</PRE>
+
+<P>However, it is important to remember that string 
+variables are arrays, so we cannot just make assignments 
+and comparisons using the operators "=" and "==". 
+We cannot, for example, simply write</P>
+
+<PRE WIDTH=100>
+<TT>	phrase = "You typed: ";</TT>
+</PRE>
+
+<P>Instead, we can use a special set of functions for 
+string assignment and comparison.</P>
+
+<P><A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-5-3"><H3>Some Predefined String Functions</H3></A>
+
+<P>The library <tt>cstring</tt> (old style header <tt>string.h</tt>)
+contains a number of useful functions for string operations. We will
+assume that the program fragments discussed below are embedded 
+in programs containing the  "include" statement</P>
+
+<PRE WIDTH=100>
+	<TT>#include&lt;cstring&gt;</TT>
+</PRE>
+
+
+<P>Given the string variable "<TT>a_string</TT>", we can copy 
+a specific string value or the contents of another string 
+to it using the two argument function "<TT>strcpy(...)</TT>". 
+Hence the statement</P>
+
+<PRE WIDTH=100>
+	<TT>strcpy(a_string, "You typed: ");</TT>
+</PRE>
+
+<P>assigns the first 11 elements of  "<TT>a_string</TT>" to 
+the respective characters in "<TT>"You typed: "</TT>", and 
+assigns the sentinel character "<TT>'\0'</TT>" to the 12th 
+element. The call</P>
+
+<PRE WIDTH=100>
+	<TT>strcpy(a_string, another_string);</TT>
+</PRE>
+
+<P>copies the string value stored in "<TT>another_string</TT>" to 
+"<TT>a_string</TT>". But care has to be taken with this 
+function. If  "<TT>a_string</TT>" is less than (1 + L), where L 
+is the length of the string value currently stored in 
+"<TT>another_string</TT>", the call to the function will 
+cause a range bound error which will not be detected by 
+the compiler.</P>
+
+
+<P>We can, however, check the length of the value stored 
+in "<TT>another_string</TT>" using the function  
+"<TT>strlen(...)</TT>". The call "<TT>strlen(another_string)</TT>" returns 
+the length of the current string stored in 
+"<TT>another_string</TT>" (the character  "<TT>'\0'</TT>" is not counted).</P>
+
+<P>The comparison function "<TT>strcmp(...)</TT>" returns "False" (i.e. 0) 
+if its two string arguments are the same, and 
+the two argument function "<TT>strcat(...)</TT>" concatenates its 
+second argument onto the end of its first 
+argument. 
+<A HREF="#Program6-5-1">Program 6.5.1</A> 
+illustrates the use of these 
+functions. Again, care must be taken with 
+"<TT>strcat(...)</TT>". C++ does not check that the first variable 
+argument is big enough to contain the two 
+concatenated strings, so that once again there is a danger 
+of undetected range bound errors.</P>
+
+<P><A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-5-4"><H3>String Input using "<TT>getline(...)</TT>"</H3></A>
+
+<P>Although the operator "<TT>&gt;&gt;</TT>" can be used to input strings 
+(e.g. from the keyboard), its use is limited because 
+of the way it deals with space characters. Supposing a 
+program which includes the statements</P>
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	cout &lt;&lt; "Enter name: ";
+	cin &gt;&gt; a_string;
+	...
+	...</TT>
+</PRE>
+
+<P>results in the input/output session</P>
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	Enter name: <B>Rob Miller</B>
+	...
+	...</TT>
+</PRE>
+
+<P>The string variable will then contain the string 
+value "<TT>"Rob"</TT>", because the operator "<TT>&gt;&gt;</TT>" 
+assumes that the 
+space character signals the end of input. It is 
+therefore often better to use the two argument function 
+"<TT>getline(...)</TT>". For example, the statement</P>
+
+<PRE WIDTH=100>
+<TT>	cin.getline(a_string,80);</TT>
+</PRE>
+
+<A NAME="Program6-5-1"></A>
+<P>allows the user to type in a string of up to 79 characters 
+long, including spaces. (The extra element is for the 
+sentinel character.) The following program 
+illustrates the use of  "<TT>getline(...)</TT>",  "<TT>strcmp(...)</TT>", 
+"<TT>strcpy(...)</TT>" and "<TT>strcat(...)</TT>":</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	#include &lt;cstring&gt;
+	
+	using namespace std;
+
+	const int MAXIMUM_LENGTH = 80;
+	
+	int main()
+	{
+		char first_string[MAXIMUM_LENGTH];
+		char second_string[MAXIMUM_LENGTH];
+	
+		cout &lt;&lt; "Enter first string: ";
+		cin.getline(first_string,MAXIMUM_LENGTH);
+		cout &lt;&lt; "Enter second string: ";
+		cin.getline(second_string,MAXIMUM_LENGTH);
+	
+		cout &lt;&lt; "Before copying the strings were ";
+		if (strcmp(first_string,second_string)) 
+			cout &lt;&lt; "not ";
+		cout &lt;&lt; "the same.\n";
+	
+		strcpy(first_string,second_string);
+	
+		cout &lt;&lt; "After copying the strings were ";
+		if (strcmp(first_string,second_string))
+			cout &lt;&lt; "not ";
+		cout &lt;&lt; "the same.\n";
+	
+		strcat(first_string,second_string);
+	
+		cout &lt;&lt; "After concatenating, the first string is: ";
+		cout &lt;&lt; first_string;
+	
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller6-5-1.cpp">Program 6.5.1</A></B></P>
+</CENTER>
+
+<P>A example input/output session is:</P>
+
+<PRE WIDTH=100>
+<TT>	Enter first string: <B>Hello class.</B>
+	Enter second string: <B>Hello Rob.</B>
+	Before copying the strings were not the same.
+	After copying the strings were the same.
+	After concatenating, the first string is: Hello Rob.Hello Rob.</TT>
+</PRE>
+
+<P>
+<A 
+HREF="CourseStructure.html#S6">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S6-6"><H2>6.6 Summary</H2></A>
+
+<P>In this lecture we have seen how a list of variables 
+of the same data type may be represented as an array. 
+We have seen how arrays may be passed as parameters to 
+functions, and we have seen a simple algorithm 
+for sorting arrays. We have also briefly discussed the 
+notion of a two-dimensional array. Finally, we have 
+seen that C++ provides some special functions to 
+manipulate strings, which are simply arrays of characters 
+always including a special sentinel character. 
+The material here is also covered in more detail in 
+<A HREF="CourseStructure.html#Books">Savitch</A>, 
+Chapter 7 and Chapter 8.</P>
+
+<H1><A 
+HREF="RobMillerE6.html">
+Exercises</A></H1>
+<BR><HR>
+
+</BODY>
+</HTML>

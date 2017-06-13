@@ -1,0 +1,689 @@
+<HTML>
+<HEAD>
+<TITLE>BRANCH AND LOOP STATEMENTS</TITLE>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link REL="stylesheet" TYPE="text/css" href="basic.css">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+
+<P><HR></P>
+<KBD><P>This document is part of the HTML publication "<A HREF="CourseStructure.html"><B>An Introduction to the Imperative Part of C++</B></A>"<BR>
+<BR>
+The original version was produced by <A HREF="http://www.ucl.ac.uk/dis/people/robmiller"><B>Rob Miller</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1996.<BR>
+<BR>
+Version 1.1 (modified by <A HREF="http://www.cs.ucl.ac.uk/people/D.Clark.html"><B>David Clark</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1997)</P>
+<P>Version 1.2 (modified by <B>Bob White</B> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1998)</P>
+<P>Version 1.3, 1.4, 2.0, ..., 2.15 (modified by <A HREF="http://www.doc.ic.ac.uk/~wjk"><B>William Knottenbelt</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1999-September 2016)</KBD></P>  
+<P><HR></P>
+
+<CENTER>
+<H1>5. Branch and Loop Statements</H1>
+</CENTER>
+<BR>
+
+<A NAME="S5-1"><H2>5.1 Boolean Values, Expressions and Functions</H2></A>
+
+<P>In this lecture we will look more closely at 
+branch and loop statements such as "for" and "while" loops and 
+"if ... else" statements. All these constructs 
+involve the evaluation of one or more logical (or "Boolean") 
+expressions, and so we begin by looking at 
+different ways to write such expressions.</P>
+
+<P>As we have seen, in reality C++ represents "True" 
+as the integer 1, and "False" as 0. However, 
+expressions such as</P>
+
+<CENTER>
+<P><TT>condition1 == 1</TT></P>
+</CENTER>
+
+<P>or</P>
+<CENTER>
+<P><TT>condition2 == 0</TT></P>
+</CENTER>
+
+<P>aren't particularly clear - it would be better 
+to be able to follow our intuition and write</P>
+
+<CENTER>
+<P><TT>condition1 == True</TT></P>
+</CENTER>
+<P>and</P>
+<CENTER>
+<P><TT>condition2 == False</TT></P>
+</CENTER>
+
+<P>Furthermore, it is desirable to have a separate 
+type for variables such as "<TT>condition1</TT>", rather than 
+having to declare them as of type "<TT>int</TT>". We 
+can achieve all of this with a <I>named enumeration</I>:</P>
+
+<PRE WIDTH=100><TT>
+<TT>	enum Logical {False, True}</TT>
+</TT></PRE>
+
+<P>which is equivalent to</P>
+
+<PRE WIDTH=100><TT>
+<TT>	enum Logical {False = 0, True = 1}</TT>
+</TT></PRE>
+
+<P>This line acts a kind of <I>type definition</I> for a 
+new data type "<TT>Logical</TT>", so that lower down the program we 
+can add variable declarations such as:</P>
+
+<PRE WIDTH=100><TT>
+<TT>	Logical condition1, condition2;</TT>
+</TT></PRE>
+
+<P>Indeed, we can now use the identifier "<TT>Logical</TT>" 
+in exactly the same way as we use the identifiers "<TT>int</TT>", 
+"<TT>char</TT>", etc. In particular, we can write functions 
+which return a value of type "<TT>Logical</TT>". The following 
+example program takes a candidate's age and test 
+score, and reports whether the candidate has passed the 
+test. It uses the following criteria: candidates 
+between 0 and 14 years old have a pass mark of 50%, 15 and 
+16 year olds have a pass mark of 55%, over 16's 
+have a pass mark of 60%:</P>
+
+<PRE WIDTH=120><TT>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	enum Logical {False, True};
+	
+	Logical acceptable(int age, int score);
+	
+	/* START OF MAIN PROGRAM */
+	int main() 
+	{
+		int candidate_age, candidate_score;
+	
+		cout &lt;&lt; "Enter the candidate's age: ";
+		cin &gt;&gt; candidate_age;
+		cout &lt;&lt; "Enter the candidate's score: ";
+		cin &gt;&gt; candidate_score;
+	
+		if (acceptable(candidate_age, candidate_score))
+			cout &lt;&lt; "This candidate passed the test.\n";
+		else
+			cout &lt;&lt; "This candidate failed the test.\n";
+	
+		return 0;
+	}
+	/* END OF MAIN PROGRAM */
+
+	/* FUNCTION TO EVALUATE IF TEST SCORE IS ACCEPTABLE */
+	Logical acceptable(int age, int score)
+	{
+		if (age &lt;= 14 &amp;&amp; score &gt;= 50)
+			return True;
+		if (age &lt;= 16 &amp;&amp; score &gt;= 55)
+			return True;
+		if (score &gt;= 60)
+			return True;
+		return False;
+	}
+	/*END OF FUNCTION */</TT>
+</TT></PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-1-1.cpp">
+Program 5.1.1</A></B></P>
+</CENTER>
+
+<P>Note that since "<TT>True</TT>" and "<TT>False</TT>" are constants, it makes 
+sense to declare them outside the scope of the 
+main program, so that the type "<TT>Logical</TT>" can be 
+used by every function in the file. An alternative way to 
+write the above function "<TT>acceptable(...)</TT>" would be:</P>
+
+<PRE WIDTH=100><TT>
+<TT>	/* FUNCTION TO EVALUATE IF TEST SCORE IS ACCEPTABLE */
+	Logical acceptable(int age, int score)
+	{
+		Logical passed_test = False;
+	
+		if (age &lt;= 14 &amp;&amp; score &gt;= 50)
+			passed_test = True;
+		else if (age &lt;= 16 &amp;&amp; score &gt;= 55)
+			passed_test = True;
+		else if (score &gt;= 60)
+			passed_test = True;
+		
+		return passed_test;
+	}
+	/*END OF FUNCTION */</TT>
+</TT></PRE>
+
+<P>Defining our own data types (even if for the moment 
+they're just sub-types of "<TT>int</TT>") brings us another 
+step closer to object-oriented programming, 
+in which complex types of data structure (or <I>classes</I> of <I>objects</I>) 
+can be defined, each with their associated libraries of operations.</P>
+
+<A NAME="S5-1-1"><H3>Note: The Identifiers "<TT>true</TT>" and 
+"<TT>false</TT>" in C++</H3></A>
+
+<P>Note that C++ implicitly includes the named enumeration</P>
+
+<PRE WIDTH=100>
+	<TT>enum bool {false, true};</TT>
+</PRE>
+
+<P>So you can't (re)define the all-lower-case constant 
+identifiers "<TT>true</TT>" and "<TT>false</TT>" for yourself. In addition,
+you can use the type <TT>bool</TT> in the same way as we used <TT>Logical</TT>
+in our example.</P>
+
+
+<P><A 
+HREF="CourseStructure.html#S5">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S5-2"><H2>5.2 "For", "While" and "Do ... While" Loops</H2></A>
+
+<P>We have already been introduced to "for" loops in 
+<A HREF="RobMillerL2.html#ForLoop">Lecture 2</A> 
+and to "while" loops in 
+<A HREF="RobMillerL4.html#WhileLoop">Lecture 4</A>. 
+Notice that any "for" loop can be 
+re-written as a "while" loop. For example, 
+<A HREF="RobMillerL2.html#ForLoop">Program 2.2.2</A> from 
+Lecture 2, which was:</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+
+	int main()
+	{
+		int number;
+		char character;
+	
+		for (number = 32 ; number &lt;= 126 ; number = number + 1) {
+	
+			character = number;
+			cout &lt;&lt; "The character '" &lt;&lt; character;
+			cout &lt;&lt; "' is represented as the number ";
+			cout &lt;&lt; number &lt;&lt; " in the computer.\n";
+		}
+
+		return 0;
+	}</TT>
+</PRE>
+<CENTER>
+<P><B><A HREF="RobMiller2-2-2.cpp">
+Program 2.2.2</A></B></P>
+</CENTER>
+
+<P>can be written equivalently as</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	int main()
+	{
+		int number;
+		char character;
+	
+		number = 32;
+		while (number &lt;= 126)
+		{
+			character = number;
+			cout &lt;&lt; "The character '" &lt;&lt; character;
+			cout &lt;&lt; "' is represented as the number ";
+			cout &lt;&lt; number &lt;&lt; " in the computer.\n";
+			number++;
+		}
+
+		return 0;
+	}</TT>
+</PRE>
+<CENTER>
+<P>
+<B><A HREF="RobMiller5-2-1.cpp">
+Program 5.2.1</A></B></P>
+</CENTER>
+
+
+<P>Moreover, any "while" loop can be trivially re-written 
+as a "for" loop - we could for example replace the 
+line</P>
+
+<PRE WIDTH=100>
+<TT>	while (number &lt;= 126)
+</TT></PRE>
+
+<P>with the line</P>
+
+<PRE WIDTH=100>
+<TT>	for ( ; number &lt;= 126 ; )</TT>
+</PRE>
+
+<P>in the program above.</P>
+
+<P>There is a third kind of "loop" statement in C++ 
+called a <I>"do ... while" loop</I>. This differs from "for" and 
+"while" loops in that the statement(s) inside the 
+<TT>{}</TT> braces are always executed once, before the repetition 
+condition is even checked. "Do ... while" loops 
+are useful, for example, to ensure that the program user's 
+keyboard input is of the correct format:</P>
+
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	do
+	{
+		cout &lt;&lt; "Enter the candidate's score: ";
+		cin &gt;&gt; candidate_score;
+		if (candidate_score &gt; 100 || candidate_score &lt; 0)
+			cout &lt;&lt; "Score must be between 0 and 100.\n";
+	}
+	while (candidate_score &gt; 100 || candidate_score &lt; 0);
+	...
+	...</TT>
+</PRE>
+
+<CENTER>
+<P><B>Program Fragment 5.2.2a</B></P>
+</CENTER>
+
+<P>This avoids the need to repeat the input prompt and 
+statement, which would be necessary in the equivalent 
+"while" loop:</P>
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	cout &lt;&lt; "Enter the candidate's score: ";
+	cin &gt;&gt; candidate_score;
+	while (candidate_score &gt; 100 || candidate_score &lt; 0)
+	{
+		cout &lt;&lt; "Score must be between 0 and 100.\n";
+		cout &lt;&lt; "Enter the candidate's score: ";
+		cin &gt;&gt; candidate_score;
+	}
+	...
+	...</TT>
+</PRE>
+
+<CENTER>
+<P><B>Program Fragment 5.2.2b</B></P>
+</CENTER>
+
+
+<P>
+<A 
+HREF="CourseStructure.html#S5">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+
+
+<A NAME="S5-3"><H2>5.3 Multiple Selection and Switch Statements</H2></A>
+
+
+<P>We have already seen 
+(<A HREF="RobMillerL1.html#StrungTogether">Lecture 1</A>) 
+how "if" statements 
+can be strung together to form a "multiway 
+branch". Here's a simplified version of the previous example:</P>
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	if (total_test_score &gt;=0 &amp;&amp; total_test_score &lt; 50)
+		cout &lt;&lt; "You are a failure - you must study much harder.\n";
+	else if (total_test_score &lt; 60)
+		cout &lt;&lt; "You have just scraped through the test.\n";
+	else if (total_test_score &lt; 80)
+		cout &lt;&lt; "You have done quite well.\n";
+	else if (total_test_score &lt;= 100)
+		cout &lt;&lt; "Your score is excellent - well done.\n";
+	else
+		cout &lt;&lt; "Incorrect score - must be between 0 and 100.\n";
+	...
+	...</TT>
+</PRE>
+
+<P>Because multiple selection can sometimes be difficult 
+to follow, C++ provides an alternative method of 
+handling this concept, called the <I>switch</I> statement. 
+"Switch" statements can be used when several options 
+depend on the value of a single variable or expression. 
+In the example above, the message printed depends 
+on the value of "<TT>total_test_score</TT>". This can be any 
+number between 0 and 100, but we can make 
+things easier to handle by introducing an extra integer 
+variable "<TT>score_out_of_ten</TT>", and adding the 
+assignment:</P>
+
+<PRE WIDTH=100>
+<TT>	score_out_of_ten = total_test_score / 10;</TT>
+</PRE>
+
+<P>The programming task is now as follows: 
+(i) if "<TT>score_out_of_ten</TT>" has value 0, 1, 2, 3 or 4, print 
+"You are a failure - you must study much harder", 
+(ii) if "<TT>score_out_of_ten</TT>" has value 5, print "You 
+have just scraped through the test", 
+(iii) if "<TT>score_out_of_ten</TT>" has value 6 or 7, print "You have done 
+quite well", and finally (iv) if "<TT>score_out_of_ten</TT>" 
+has value 8, 9 or 10, print "Your score is excellent 
+- well done". Here's how this is achieved with a 
+"switch" statement:</P>
+
+<PRE WIDTH=100>
+<TT>	...
+	...
+	score_out_of_ten = total_test_score / 10;
+	
+	switch (score_out_of_ten)
+	{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:     cout &lt;&lt; "You are a failure - you ";
+		            cout &lt;&lt; "must study much harder.\n";
+		            break;
+	
+		case 5:     cout &lt;&lt; "You have just scraped through the test.\n";
+		            break;
+
+		case 6:
+		case 7:     cout &lt;&lt; "You have done quite well.\n";
+		            break;
+	
+		case 8:
+		case 9:
+		case 10:    cout &lt;&lt; "Your score is excellent - well done.\n";
+		            break;
+
+		default:    cout &lt;&lt; "Incorrect score - must be between ";
+		            cout &lt;&lt; "0 and 100.\n";
+	}
+	...
+	...</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-3-1.cpp">
+Program 5.3.1</A></B></P>
+</CENTER>
+
+<P>In general, the syntax of a "switch" statement is (approximately):</P>
+
+<PRE WIDTH=100>
+<TT>    switch (<I>selector</I>)
+    {
+        case <I>label1</I>:    <I>&lt;statements 1&gt;</I>
+                        break;
+        ...
+        ...
+        ...
+    
+        case <I>labelN</I>:    <I>&lt;statements N&gt;</I>
+                        break;
+    
+        default:        <I>&lt;statements&gt;</I>
+    }</TT>
+</PRE>
+
+<P>
+There are several things to note about such "switch" 
+statements:</P>
+
+<UL>
+
+<LI>The statements which are executed are 
+exactly those between the first label 
+which matches the value of selector and 
+the first "<TT>break</TT>" after this matching 
+label.<BR><BR></LI>
+
+<LI>The "<TT>break</TT>" statements are optional, 
+but they help in program efficiency and 
+clarity and should ideally always be used to 
+end each case. When a "<TT>break</TT>" is 
+encountered within a case's statement, control 
+is transfered immediately to the 
+first program statement following the entire 
+"switch" statement. Otherwise, 
+execution continues.<BR><BR></LI>
+
+<LI>The selector can have a value of any ordinal 
+type (e.g. "<TT>char</TT>" or  "<TT>int</TT>" but not 
+"<TT>float</TT>").<BR><BR></LI>
+
+<LI>The "<TT>default</TT>" is optional, but is a good safety measure.<BR></LI>
+
+</UL>
+
+<P><A 
+HREF="CourseStructure.html#S5">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S5-1"><H2>5.4 Blocks and Scoping</H2></A>
+
+<P>We have already seen how <I>compound statements</I> in C++ 
+are delimited by "<TT>{}</TT>" braces. These braces have a 
+special effect on variable declarations. A compound 
+statement that contains one or more variable 
+declarations is called a <I>block</I>, and the variables 
+declared within the block have the block as their <I>scope</I>. In 
+other words, the variables are "created" each time the 
+program enters the block, and "destroyed" upon exit. 
+If the same identifier has been used both for a 
+variable inside and a variable outside the block, the variables 
+are unrelated. While in the block, the program will 
+assume by default that the identifier refers to the inner 
+variable - it only looks outside the block for the 
+variable if it can't find a variable declaration inside. Hence 
+the program</P>
+
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;	
+
+	int integer1 = 1;
+	int integer2 = 2;
+	int integer3 = 3;
+	
+	int main()
+	{
+		int integer1 = -1;
+		int integer2 = -2;
+		{
+			int integer1 = 10;
+			cout &lt;&lt; "integer1 == " &lt;&lt; integer1 &lt;&lt; "\n";
+			cout &lt;&lt; "integer2 == " &lt;&lt; integer2 &lt;&lt; "\n";
+			cout &lt;&lt; "integer3 == " &lt;&lt; integer3 &lt;&lt; "\n";
+		}
+		cout &lt;&lt; "integer1 == " &lt;&lt; integer1 &lt;&lt; "\n";
+		cout &lt;&lt; "integer2 == " &lt;&lt; integer2 &lt;&lt; "\n";
+		cout &lt;&lt; "integer3 == " &lt;&lt; integer3 &lt;&lt; "\n";
+	
+		return 0;
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-4-1.cpp">
+Program 5.4.1</A></B></P>
+</CENTER>
+
+<P>produces the output</P>
+
+<PRE WIDTH=100>
+<TT>	integer1 == 10
+	integer2 == -2
+	integer3 == 3
+	integer1 == -1
+	integer2 == -2
+	integer3 == 3</TT>
+</PRE>
+
+<P>
+The use of variables local to a block can sometimes 
+be justified because it saves on memory, or because it 
+releases an identifier for re-use in another part 
+of the program. The following program prints a series of 
+"times tables" for integers from 1 to 10:</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	int main()
+	{
+		int number;
+	
+		for (number = 1 ; number &lt;= 10 ; number++)
+		{
+			int multiplier;
+	
+			for (multiplier = 1 ; multiplier &lt;= 10 ; multiplier++)
+			{
+				cout &lt;&lt; number &lt;&lt; " x " &lt;&lt; multiplier &lt;&lt; " = ";
+				cout &lt;&lt; number * multiplier &lt;&lt; "\n";
+			}
+			cout &lt;&lt; "\n";
+		}
+		...
+		...</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-4-2.cpp">
+Program 5.4.2</A></B></P>
+</CENTER>
+
+<P>However, we can achieve the same effect, and 
+end up with a clearer program, by using a function:</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	void print_times_table(int value, int lower, int upper);
+	
+	int main()
+	{
+		int number;
+	
+		for (number = 1 ; number &lt;= 10 ; number++)
+		{
+			print_times_table(number,1,10);
+			cout &lt;&lt; "\n";
+		}
+		...
+		...
+	}
+	
+	void print_times_table(int value, int lower, int upper)
+	{
+		int multiplier;
+	
+		for (multiplier = lower ; multiplier &lt;= upper ; multiplier++)
+		{
+			cout &lt;&lt; value &lt;&lt; " x " &lt;&lt; multiplier &lt;&lt; " = ";
+			cout &lt;&lt; value * multiplier &lt;&lt; "\n";
+		}
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-4-3.cpp">
+Program 5.4.3</A></B></P>
+</CENTER>
+
+<P>or eliminate all variable declarations 
+from "<TT>main()</TT>" using two functions:</P>
+	
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	
+	void print_tables(int smallest, int largest);
+	
+	void print_times_table(int value, int lower, int upper);
+	
+	int main()
+	{
+		print_tables(1,10);
+		...
+		...
+	}
+	
+	void print_tables(int smallest, int largest)
+	{
+		int number;
+	
+		for (number = smallest ; number &lt;= largest ; number++)
+		{
+			print_times_table(number,1,10);
+			cout &lt;&lt; "\n";
+		}
+	}
+	
+	void print_times_table(int value, int lower, int upper)
+	{
+		int multiplier;
+	
+		for (multiplier = lower ; multiplier &lt;= upper ; multiplier++)
+		{
+			cout &lt;&lt; value &lt;&lt; " x " &lt;&lt; multiplier &lt;&lt; " = ";
+			cout &lt;&lt; value * multiplier &lt;&lt; "\n";
+		}
+	}</TT>
+</PRE>
+
+<CENTER>
+<P><B><A HREF="RobMiller5-4-4.cpp">
+Program 5.4.4</A></B></P>
+</CENTER>
+
+<P><A 
+HREF="CourseStructure.html#S5">
+(BACK TO COURSE CONTENTS)</A><BR></P>
+
+<A NAME="S5-5"><H2>5.5 A Remark about Nested Loop Statements</H2></A>
+
+<P>The above "times table" programs illustrate how nested 
+loop statements can be made more readable by the 
+use of functional abstraction. By making the 
+body of the loop into a function call, its design can be 
+separated from the design of the rest of the 
+program, and problems with scoping of variables and 
+overloading of variable names can be avoided.</P>
+
+<A NAME="S5-6"><H2>5.6 Summary</H2></A>
+
+<P>In this lecture we have seen how a Boolean data type can 
+be created using a named enumeration, and how 
+functions can be written which return "<TT>True</TT>" or "<TT>False</TT>". 
+We have seen how these functions can be used as 
+conditions in branch and loop statements. 
+We have discussed the relationship between "if", "while" and "do 
+... while" loops, and shown how nested "if" statements 
+can in some cases be re-written as "switch" 
+statements. We have also seen how local variables 
+function within blocks delimited by "<TT>{}</TT>" braces. The 
+material here is also covered in more detail in 
+<A HREF="CourseStructure.html#Books">Savitch</A>, 
+Chapter 3.</P>
+
+<H1><A 
+HREF="RobMillerE5.html">
+Exercises</A></H1>
+<BR><HR>
+</BODY>
+</HTML>

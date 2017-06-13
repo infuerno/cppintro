@@ -4,10 +4,10 @@
 
 #include <iostream>
 #include <iomanip>
+#include "conversions.h"
+
 using namespace std;
 
-double celsius_of(int fahr);
-double absolute_value_of(int fahr);
 void print_preliminary_message();
 void input_table_specifications(int& lower, int& upper, int& step);
 void print_message_echoing_input(int lower, int upper, int step);
@@ -32,16 +32,6 @@ int main()
     print_table(lower, upper, step);
 
     return 0;
-}
-
-double celsius_of(int fahr)
-{
-    return (static_cast<double>(5)/9) * (fahr - 32);
-}
-
-double absolute_value_of(int fahr)
-{
-    return ((static_cast<double>(5)/9) * (fahr - 32)) + 273.15;
 }
 
 void print_preliminary_message()

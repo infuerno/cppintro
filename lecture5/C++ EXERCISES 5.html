@@ -1,0 +1,267 @@
+<HTML>
+<HEAD>
+<TITLE>C++ EXERCISES 5</TITLE>
+  <meta http-equiv="Content-Type" content="text/html; charaset=ISO-8859-1">
+  <link REL="stylesheet" TYPE="text/css" href="basic.css">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<P><HR></P>
+<KBD><P>This document is part of the HTML publication "<A HREF="CourseStructure.html"><B>An Introduction to the Imperative Part of C++</B></A>"<BR>
+<BR>
+The original version was produced by <A HREF="http://www.ucl.ac.uk/dis/people/robmiller"><B>Rob Miller</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1996.<BR>
+<BR>
+Version 1.1 (modified by <A HREF="http://www.cs.ucl.ac.uk/people/D.Clark.html"><B>David Clark</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1997)</P>
+<P>Version 1.2 (modified by <B>Bob White</B> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1998)</P>
+<P>Version 1.3, 1.4, 2.0, ..., 2.15 (modified by <A HREF="http://www.doc.ic.ac.uk/~wjk"><B>William Knottenbelt</B></A> at <A HREF="http://www.doc.ic.ac.uk/"><B>Imperial College London</B></A>, September 1999-September 2016)</KBD></P>  
+<P><HR></P>
+
+<CENTER>
+<H1>Introduction to C++ Programming: Exercise Sheet 5</H1>
+</CENTER>
+
+<A NAME="Q1"><H2>Question 1</H2></A>
+
+<P>Write a logical (i.e. Boolean) valued function which takes 
+a single integer parameter, and returns 
+"True" if and only if the integer is a prime number 
+between 1 and 1000 (note that 1 is not usually counted 
+as a prime number). Test your function by calling it 
+from an appropriate "driver" program with different 
+inputs.</P>
+
+<P><I><B>Hints:</B><BR>(i) if a number is not prime, it has 
+at least one prime factor less than or equal to its square 
+root,<BR>(ii) (32 x 32) = 1024 and 1024 &gt; 1000.</I></P>
+
+<P>
+(<A HREF="RobMillerEA5-1.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S5">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<A NAME="Q2"><H2>Question 2</H2></A>
+
+<P>Write a function "<TT>print_pyramid(...)</TT>" which takes a 
+single integer argument "<TT>height</TT>" and displays 
+a "pyramid" of this height made up of of "<TT>*</TT>" 
+characters on the screen. Test the function with a simple 
+"driver" program, which should be able to 
+reproduce the following example output:</P>
+
+<PRE WIDTH=100>
+<TT>	This program prints a 'pyramid' shape of
+	a specified height on the screen.
+	
+	how high would you like the pyramid?: <B>37</B>
+	Pick another height (must be between 1 and 30): <B>6</B>
+	
+	
+	               **
+	              ****
+	             ******
+	            ********
+	           **********
+	          ************</TT>
+</PRE>
+<BR>
+
+<P>
+(<A HREF="RobMillerEA5-2.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S5">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+
+<A NAME="Q3"><H2>Question 3</H2></A>
+
+<P>"For" loops can always be re-written as "while" loops, 
+and vice-versa. Are the following two programs 
+equivalent, and what is their output? Explain your 
+answer, and run the programs to check.</P>
+
+<P><A HREF="RobMillerEx5-3a.cpp">Program (a)</A>:</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+						
+	int main()
+	{
+		int count = 1;
+		for (; count &lt;= 5 ; count++)
+		{
+			int count = 1;
+			cout &lt;&lt; count &lt;&lt; "\n";
+		}
+		return 0;
+	}</TT>
+</PRE><BR>
+
+<P><A HREF="RobMillerEx5-3b.cpp">Program (b)</A>:</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+
+	int main()
+	{
+		int count = 1;
+		while (count &lt;= 5)
+		{
+			int count = 1;
+			cout &lt;&lt; count &lt;&lt; "\n";
+			count++;
+		}
+		return 0;
+	}</TT>
+</PRE><BR>
+
+<P>
+(<A HREF="RobMillerEA5-3a.cpp">Program (a) output</A>) 
+(<A HREF="RobMillerEA5-3b.cpp">Program (b) output</A>) 
+(<A HREF="CourseStructure.html#S5">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+
+<A NAME="Q4"><H2>Question 4</H2></A>
+
+<P>The <A HREF="RobMillerEx5-4.cpp">following program</A> 
+prints out a table of shop 
+closing times. It uses a named enumeration to define a 
+new data type "<TT>Day</TT>", and a function "<TT>closing_time(...)</TT>" 
+to generate the closing time from a given day 
+(not a complicated function - the shop closes at 5pm 
+every day). The program illustrates how the identifiers 
+"<TT>int</TT>" and "<TT>Day</TT>" can both be used as type casts 
+(in the head of the "for" loop and in the call to 
+"<TT>closing_time(...)</TT>" respectively):</P>
+
+<PRE WIDTH=100>
+<TT>	#include &lt;iostream&gt;
+	using namespace std;
+	
+	enum Day {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
+	
+	int closing_time(Day day_of_the_week);
+	
+	/* MAIN PROGRAM */
+	int main()
+	{
+		int count;
+	
+                cout.setf(ios::left);
+		/* Print table heading */
+		cout.width(17);
+		cout &lt;&lt; "DAY";
+		cout &lt;&lt; "CLOSING TIME\n\n";
+	
+		/* Print table from Sunday to Saturday */
+		for (count = static_cast&lt;int&gt;(Sun) ; count &lt;= static_cast&lt;int&gt;(Sat) ; count++)
+		{
+			cout.width(19);
+			switch (count)
+			{
+				case Sun: cout &lt;&lt; "Sunday"; break;
+				case Mon: cout &lt;&lt; "Monday"; break;
+				case Tue: cout &lt;&lt; "Tuesday"; break;
+				case Wed: cout &lt;&lt; "Wednesday"; break;
+				case Thu: cout &lt;&lt; "Thursday"; break;
+				case Fri: cout &lt;&lt; "Friday"; break;
+				case Sat: cout &lt;&lt; "Saturday"; break;
+				default:	cout &lt;&lt; "ERROR!";
+			}
+			cout &lt;&lt; closing_time(static_cast&lt;Day&gt;(count)) &lt;&lt; "pm\n";
+		}
+	
+		return 0;
+	}
+	/* END OF MAIN PROGRAM */
+	
+	/* FUNCTION TO GENERATE SHOP CLOSING TIMES FROM DAY OF THE WEEK */
+	int closing_time(Day day_of_the_week)
+	{
+		return 5;
+	}</TT>
+</PRE>
+<BR>
+
+<P>(a) What happens (and why) if we try to replace the 
+"switch" statement with the single line</P>
+
+<PRE WIDTH=100>
+<TT>	cout &lt;&lt; static_cast&lt;Day&gt;(count);</TT>         ?
+</PRE>
+
+<P>Replace the "switch" statement with the line</P>
+
+
+<PRE WIDTH=100>
+<TT>	print_day(static_cast&lt;Day&gt;(count), cout);</TT>
+</PRE>
+
+<P>instead, and add an appropriate definition after 
+the main program for the function "<TT>print_day(...)</TT>", using 
+a "switch" statement (don't forget the function 
+declaration as well). ("<TT>cout</TT>" is of type or class 
+"<TT>ostream</TT>").</P>
+
+<P>(b) The shop keeper wants to change the closing 
+times to 1pm on Sundays, 5pm on Saturdays, 8pm on 
+Wednesdays, and 6pm all other days. Make 
+appropriate changes to the function "<TT>closing_time(...)</TT>" 
+using a "switch" statement, and test the program.</P>
+
+<P>
+(<A HREF="RobMillerEA5-4.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S5">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<A NAME="Q5"><H2>Question 5</H2></A>
+
+
+<P>Write a program which prints a table listing the number 
+of occurrences of the lower-case characters <TT>'a'</TT> 
+to <TT>'z'</TT> in the file "Sheet5Ex5.cpp". (Save your program 
+in a file of this name so that you can test it on 
+itself.) Write your program as though your computer is 
+short of memory - you should declare only one 
+variable of type "<TT>ifstream</TT>", one variable of type "<TT>char</TT>", 
+and two variables of type "<TT>int</TT>". The 
+program should produce output such as the following:
+</P>
+
+<PRE WIDTH=100>
+<TT>	CHARACTER           OCCURRENCES
+	
+	a                   38
+	b                   5
+	c                   35
+	d                   7
+	e                   58
+	f                   8
+	g                   8
+	h                   21
+	i                   32
+	j                   0
+	k                   0
+	l                   19
+	m                   16
+	n                   34
+	o                   22
+	p                   8
+	q                   0
+	r                   48
+	s                   17
+	t                   61
+	u                   15
+	v                   0
+	w                   4
+	x                   4
+	y                   0
+	z                   1</TT>
+</PRE>
+
+<P>
+(<A HREF="RobMillerEA5-5.cpp">EXAMPLE ANSWER</A>) 
+(<A HREF="CourseStructure.html#S5">BACK TO COURSE CONTENTS</A>)<BR></P>
+
+<BR><HR>
+
+
+</BODY>
+</HTML>
